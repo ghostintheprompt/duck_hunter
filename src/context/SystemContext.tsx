@@ -6,6 +6,8 @@ interface SystemState {
   signalStrength: number;
   noiseFloor: number;
   linkIntegrity: number;
+  cpuTemp: number;
+  impactDetected: boolean;
   alerts: { id: string, timestamp: string, type: string, description: string }[];
   isSystemReady: boolean;
   isHardwareConnected: boolean;
@@ -18,6 +20,8 @@ interface SystemContextType {
   setSignalStrength: (strength: number) => void;
   setNoiseFloor: (floor: number) => void;
   setLinkIntegrity: (integrity: number) => void;
+  setCpuTemp: (temp: number) => void;
+  setImpact: (impact: boolean) => void;
   triggerAlert: (alertId: string, type: string, description: string) => void;
   setSystemReady: (ready: boolean) => void;
   setHardwareState: (connected: boolean, type: SystemState['hardwareType']) => void;
@@ -30,8 +34,10 @@ export function SystemProvider({ children }: { children: ReactNode }) {
     droneDetected: false,
     targetId: null,
     signalStrength: 0,
-    noiseFloor: -110, // dBm
-    linkIntegrity: 100, // %
+    noiseFloor: -110,
+    linkIntegrity: 100,
+    cpuTemp: 42, // Celsius
+    impactDetected: false,
     alerts: [],
     isSystemReady: true,
     isHardwareConnected: false,
@@ -39,7 +45,12 @@ export function SystemProvider({ children }: { children: ReactNode }) {
   });
 
   const setDroneDetected = (detected: boolean, id: string | null = null) => {
-    setState(prev => ({ ...prev, droneDetected: detected, targetId: id }));
+    setState(prev => ({ 
+      ...prev, 
+      droneDetected: detected, 
+      targetId: id,
+      impactDetected: !detected ? false : prev.impactDetected 
+    }));
   };
 
   const setSignalStrength = (strength: number) => {
@@ -52,6 +63,14 @@ export function SystemProvider({ children }: { children: ReactNode }) {
 
   const setLinkIntegrity = (integrity: number) => {
     setState(prev => ({ ...prev, linkIntegrity: integrity }));
+  };
+
+  const setCpuTemp = (temp: number) => {
+    setState(prev => ({ ...prev, cpuTemp: temp }));
+  };
+
+  const setImpact = (impact: boolean) => {
+    setState(prev => ({ ...prev, impactDetected: impact }));
   };
 
   const triggerAlert = (alertId: string, type: string, description: string) => {
@@ -77,6 +96,8 @@ export function SystemProvider({ children }: { children: ReactNode }) {
       setSignalStrength, 
       setNoiseFloor, 
       setLinkIntegrity, 
+      setCpuTemp,
+      setImpact,
       triggerAlert, 
       setSystemReady, 
       setHardwareState 
