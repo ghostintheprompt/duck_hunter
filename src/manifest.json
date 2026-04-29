@@ -19,6 +19,24 @@
       "name": "MAVLink Injection",
       "category": "Protocol Exploitation",
       "technical_details": "Crafting unauthenticated MAV_CMD_DO_SET_MODE and MAV_CMD_COMPONENT_ARM_DISARM packets."
+    },
+    {
+      "id": "SCEN-MAV-004",
+      "name": "Emergency Terminal",
+      "category": "Kinetic Impact",
+      "technical_details": "Injection of MAV_CMD_DO_FLIGHT_TERMINATION (ID: 400) to force immediate motor kill in mid-air."
+    },
+    {
+      "id": "SCEN-PWR-005",
+      "name": "Thermal Overload",
+      "category": "Hardware Denial",
+      "technical_details": "Simulated telemetry flooding of SYS_STATUS packets to induce failsafe-level CPU temperatures."
+    },
+    {
+      "id": "SCEN-NAV-006",
+      "name": "RTL_Explode Protocol",
+      "category": "Logic Hijack",
+      "technical_details": "Forcing MAV_CMD_NAV_RETURN_TO_LAUNCH followed by an proximity-based payload trigger simulation."
     }
   ],
   "alerts": [
