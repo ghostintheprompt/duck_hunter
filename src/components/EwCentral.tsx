@@ -4,13 +4,34 @@ import { ShieldAlert, Zap, Radio, Target, AlertTriangle, Crosshair, Lock } from 
 import { useSystem } from '../context/SystemContext';
 
 const EW_TOOLS = [
-  { id: 'jam', name: 'BROADBAND_NOISE', desc: 'Saturate frequency with white noise to sever control links.', power: 100 },
-  { id: 'spoof', name: 'MEACONING_SPOOF', desc: 'Rebroadcast delayed GNSS signals to drift target coordinates.', power: 60 },
-  { id: 'protocol', name: 'LINK_HARDENING', desc: 'Detect and exploit ELRS/Crossfire telemetry weaknesses.', power: 40 }
+  { 
+    id: 'jam', 
+    name: 'BROADBAND_NOISE', 
+    desc: 'Saturate frequency with white noise to sever control links.', 
+    power: 100,
+    alertId: 'INC-RF-401',
+    alertType: 'SIGNAL_INTERFERENCE'
+  },
+  { 
+    id: 'spoof', 
+    name: 'MEACONING_SPOOF', 
+    desc: 'Rebroadcast delayed GNSS signals to drift target coordinates.', 
+    power: 60,
+    alertId: 'INC-GPS-502',
+    alertType: 'GNSS_DIVERGENCE'
+  },
+  { 
+    id: 'protocol', 
+    name: 'LINK_HARDENING', 
+    desc: 'Detect and exploit ELRS/Crossfire telemetry weaknesses.', 
+    power: 40,
+    alertId: 'INC-MAV-603',
+    alertType: 'UNAUTHORIZED_COMMAND'
+  }
 ];
 
 export default function EwCentral() {
-  const { state } = useSystem();
+  const { state, setNoiseFloor, setLinkIntegrity, triggerAlert } = useSystem();
   const [activeTool, setActiveTool] = useState<string | null>(null);
   const [deploymentProgress, setDeploymentProgress] = useState(0);
   const [combatLogs, setCombatLogs] = useState<string[]>([]);
@@ -21,23 +42,41 @@ export default function EwCentral() {
 
   const handleDeploy = (toolId: string) => {
     if (activeTool) return;
+    const tool = EW_TOOLS.find(t => t.id === toolId);
+    if (!tool) return;
+
     setActiveTool(toolId);
     setDeploymentProgress(0);
-    addLog(`INITIATING ${EW_TOOLS.find(t => t.id === toolId)?.name}...`);
+    addLog(`INITIATING ${tool.name}...`);
     
     const timer = setInterval(() => {
       setDeploymentProgress(p => {
         if (p >= 100) {
           clearInterval(timer);
-          addLog(`EFFECT_ACTIVE: ${EW_TOOLS.find(t => t.id === toolId)?.name}`);
+          addLog(`EFFECT_ACTIVE: ${tool.name}`);
+          
+          // Technical Restoration: Impact the environment
+          if (toolId === 'jam') {
+            setNoiseFloor(-65); // Elevate from -110 to -65
+            setLinkIntegrity(15); // Severe degradation
+            triggerAlert(tool.alertId, tool.alertType, 'Noise floor elevation > 20dB detected on control link.');
+          } else if (toolId === 'spoof') {
+            setLinkIntegrity(85);
+            triggerAlert(tool.alertId, tool.alertType, 'Mismatch between GNSS coordinates and IMU-derived dead reckoning.');
+          } else if (toolId === 'protocol') {
+             triggerAlert(tool.alertId, tool.alertType, 'Remote disarm command injected via secondary link.');
+          }
+
           setTimeout(() => {
             setActiveTool(null);
             setDeploymentProgress(0);
+            setNoiseFloor(-110);
+            setLinkIntegrity(100);
             addLog(`EFFECT_DISSIPATED.`);
           }, 5000);
           return 100;
         }
-        return p + 2;
+        return p + 4;
       });
     }, 50);
   };
@@ -59,6 +98,20 @@ export default function EwCentral() {
                  <ShieldAlert size={12} /> Warning: No target lock. Countermeasures inactive.
               </div>
            )}
+           <div className="mt-4 grid grid-cols-2 gap-4 border-t border-white/5 pt-4">
+              <div>
+                 <div className="tech-mono text-[7px] opacity-40">ENV_NOISE</div>
+                 <div className={`text-xs font-bold ${state.noiseFloor > -80 ? 'text-red-500' : 'text-duck-green'}`}>
+                    {state.noiseFloor} dBm
+                 </div>
+              </div>
+              <div>
+                 <div className="tech-mono text-[7px] opacity-40">LINK_INT</div>
+                 <div className={`text-xs font-bold ${state.linkIntegrity < 50 ? 'text-red-500' : 'text-duck-green'}`}>
+                    {state.linkIntegrity}%
+                 </div>
+              </div>
+           </div>
         </div>
 
         <div className="tech-container p-6 w-64 bg-black/40">
@@ -131,14 +184,12 @@ export default function EwCentral() {
         ))}
       </div>
 
-      {/* Triangulation Visual */}
       <div className="tech-container flex-1 bg-black/60 p-8 flex items-center justify-center relative overflow-hidden">
          <div className="absolute inset-0 opacity-10 pointer-events-none">
             <div className="w-full h-full" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, #ef4444 0%, transparent 100%)', backgroundSize: '100% 100%' }} />
          </div>
          
          <div className="relative w-96 h-96 border border-white/5 rounded-full flex items-center justify-center">
-            {/* Radar Sweeps */}
             <motion.div 
                animate={{ rotate: 360 }}
                transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
@@ -147,7 +198,6 @@ export default function EwCentral() {
             <div className="absolute w-1/3 h-1/3 border border-white/10 rounded-full" />
             <div className="absolute w-2/3 h-2/3 border border-white/10 rounded-full" />
             
-            {/* Antennas */}
             {[0, 120, 240].map((angle, i) => (
                <div 
                  key={i} 
@@ -158,7 +208,6 @@ export default function EwCentral() {
                </div>
             ))}
 
-            {/* Locked Target */}
             {state.droneDetected && (
               <motion.div 
                 initial={{ opacity: 0, scale: 0 }}

@@ -11,7 +11,7 @@ interface LogEntry {
 }
 
 export default function MavlinkLab() {
-  const { state } = useSystem();
+  const { state, triggerAlert } = useSystem();
   const [isRunning, setIsRunning] = useState(false);
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [droneState, setDroneState] = useState({ armed: false, mode: 'STABILIZE', alt: 0, lat: 45.523, lon: -122.676 });
@@ -24,15 +24,20 @@ export default function MavlinkLab() {
   };
 
   const injectCommand = async (cmd: string) => {
+    // Technical Restoration: Command integrity check
+    if (state.linkIntegrity < 30 && Math.random() > 0.5) {
+       addLog('COMMAND', `ERR: LINK_INTEGRITY_LOW // INJECTION_FAILED`);
+       return;
+    }
+
     addLog('COMMAND', `PENDING: REQUESTING_${cmd}...`);
-    
-    // Simulate tactical latency
     await new Promise(r => setTimeout(r, 600));
 
     addLog('COMMAND', `INJECTED: ${cmd}`);
     if (cmd === 'DISARM_FORCE') {
       setDroneState(prev => ({ ...prev, armed: false, alt: 0 }));
       setAlert('!!! CRITICAL: REMOTE DISARM EXECUTED !!!');
+      triggerAlert('INC-MAV-603', 'UNAUTHORIZED_COMMAND', 'Remote disarm command injected via secondary link.');
       setTimeout(() => setAlert(null), 3000);
     }
     if (cmd === 'RTL_OVERRIDE') {
@@ -51,7 +56,7 @@ export default function MavlinkLab() {
 
     const interval = setInterval(() => {
       const types: LogEntry['type'][] = ['POSITION', 'HEARTBEAT', 'WAYPOINT', 'COMMAND'];
-      const type = types[Math.floor(Math.random() * (droneState.armed ? 4 : 2))]; // Only heartbeats/pos if disarmed
+      const type = types[Math.floor(Math.random() * (droneState.armed ? 4 : 2))]; 
       
       const ts = new Date().toLocaleTimeString('en-GB', { hour12: false });
       let details = '';
@@ -77,7 +82,7 @@ export default function MavlinkLab() {
     }, 800);
 
     return () => clearInterval(interval);
-  }, [isRunning, droneState.armed, droneState.mode, droneState.alt]);
+  }, [isRunning, droneState.armed, droneState.mode, droneState.alt, state.droneDetected]);
 
   useEffect(() => {
     logEndRef.current?.scrollIntoView({ behavior: 'smooth' });
