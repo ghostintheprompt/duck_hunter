@@ -4,6 +4,9 @@ interface SystemState {
   droneDetected: boolean;
   targetId: string | null;
   signalStrength: number;
+  noiseFloor: number;
+  linkIntegrity: number;
+  alerts: { id: string, timestamp: string, type: string, description: string }[];
   isSystemReady: boolean;
   isHardwareConnected: boolean;
   hardwareType: 'SDR_SIM' | 'RTL_SDR' | 'HACKRF' | null;
@@ -13,6 +16,9 @@ interface SystemContextType {
   state: SystemState;
   setDroneDetected: (detected: boolean, id?: string | null) => void;
   setSignalStrength: (strength: number) => void;
+  setNoiseFloor: (floor: number) => void;
+  setLinkIntegrity: (integrity: number) => void;
+  triggerAlert: (alertId: string, type: string, description: string) => void;
   setSystemReady: (ready: boolean) => void;
   setHardwareState: (connected: boolean, type: SystemState['hardwareType']) => void;
 }
@@ -24,6 +30,9 @@ export function SystemProvider({ children }: { children: ReactNode }) {
     droneDetected: false,
     targetId: null,
     signalStrength: 0,
+    noiseFloor: -110, // dBm
+    linkIntegrity: 100, // %
+    alerts: [],
     isSystemReady: true,
     isHardwareConnected: false,
     hardwareType: 'SDR_SIM'
@@ -37,6 +46,22 @@ export function SystemProvider({ children }: { children: ReactNode }) {
     setState(prev => ({ ...prev, signalStrength: strength }));
   };
 
+  const setNoiseFloor = (floor: number) => {
+    setState(prev => ({ ...prev, noiseFloor: floor }));
+  };
+
+  const setLinkIntegrity = (integrity: number) => {
+    setState(prev => ({ ...prev, linkIntegrity: integrity }));
+  };
+
+  const triggerAlert = (alertId: string, type: string, description: string) => {
+    const ts = new Date().toLocaleTimeString('en-GB', { hour12: false });
+    setState(prev => ({
+      ...prev,
+      alerts: [{ id: alertId, timestamp: ts, type, description }, ...prev.alerts.slice(0, 9)]
+    }));
+  };
+
   const setSystemReady = (ready: boolean) => {
     setState(prev => ({ ...prev, isSystemReady: ready }));
   };
@@ -46,7 +71,16 @@ export function SystemProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <SystemContext.Provider value={{ state, setDroneDetected, setSignalStrength, setSystemReady, setHardwareState }}>
+    <SystemContext.Provider value={{ 
+      state, 
+      setDroneDetected, 
+      setSignalStrength, 
+      setNoiseFloor, 
+      setLinkIntegrity, 
+      triggerAlert, 
+      setSystemReady, 
+      setHardwareState 
+    }}>
       {children}
     </SystemContext.Provider>
   );

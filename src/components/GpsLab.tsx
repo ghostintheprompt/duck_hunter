@@ -4,10 +4,10 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useSystem } from '../context/SystemContext';
 
 export default function GpsLab() {
-  const { state } = useSystem();
+  const { state, triggerAlert, setLinkIntegrity } = useSystem();
   const [dataPoints, setDataPoints] = useState<{ x: number, gps: number, imu: number }[]>([]);
   const [isSpoofing, setIsSpoofing] = useState(false);
-  const [alerts, setAlerts] = useState<string[]>([]);
+  const [localAlerts, setLocalAlerts] = useState<string[]>([]);
 
   useEffect(() => {
     if (!state.droneDetected) return;
@@ -21,19 +21,23 @@ export default function GpsLab() {
         let newImu = lastImu + (Math.random() - 0.5) * 2;
 
         if (isSpoofing) {
-          // Slowly diverge GPS
           newGps = lastGps + 2 + (Math.random() * 2);
-          // IMU stays somewhat consistent with noise
           newImu = lastImu + (Math.random() - 0.5) * 2;
         }
 
         const nextPoints = [...prev.slice(-19), { x: tick++, gps: newGps, imu: newImu }];
         
-        // Detect mismatch
         if (Math.abs(newGps - newImu) > 15) {
-           if (!alerts.includes('IMU_MISMATCH')) {
-             setAlerts(a => [...a, `[${new Date().toLocaleTimeString()}] TRK_ERR: LOCK_DIVERGENCE`]);
+           if (!localAlerts.some(a => a.includes('LOCK_DIVERGENCE'))) {
+             const msg = `TRK_ERR: LOCK_DIVERGENCE`;
+             setLocalAlerts(a => [`[${new Date().toLocaleTimeString()}] ${msg}`, ...a.slice(0, 5)]);
+             triggerAlert('INC-GPS-502', 'GNSS_DIVERGENCE', 'Mismatch between GNSS coordinates and IMU-derived dead reckoning.');
+             setLinkIntegrity(70);
            }
+        } else {
+            if (!isSpoofing && state.linkIntegrity < 100) {
+                setLinkIntegrity(Math.min(100, state.linkIntegrity + 1));
+            }
         }
 
         return nextPoints;
@@ -41,7 +45,7 @@ export default function GpsLab() {
     }, 500);
 
     return () => clearInterval(interval);
-  }, [isSpoofing, alerts]);
+  }, [isSpoofing, localAlerts, state.droneDetected, state.linkIntegrity]);
 
   return (
     <div className="tech-container glow-orange mb-12">
@@ -53,7 +57,10 @@ export default function GpsLab() {
         <button 
           onClick={() => {
             setIsSpoofing(!isSpoofing);
-            if (!isSpoofing) setAlerts([]);
+            if (!isSpoofing) {
+                setLocalAlerts([]);
+                setLinkIntegrity(100);
+            }
           }}
           className={`px-3 py-1 text-[8px] tech-mono border transition-all ${
             isSpoofing ? 'border-red-500 text-red-500 bg-red-500/10' : 'border-white/10 text-white/40 hover:border-white/20'
@@ -74,13 +81,11 @@ export default function GpsLab() {
           </div>
         )}
         <div className="h-48 w-full relative border-b border-l border-white/5 flex items-end">
-          {/* Background Grid */}
           <div className="absolute inset-0 grid grid-cols-4 grid-rows-4 pointer-events-none opacity-[0.02]">
             {[...Array(4)].map((_, i) => <div key={i} className="border-t border-white" />)}
           </div>
 
           <svg className="w-full h-full overflow-visible">
-            {/* Legend */}
             <g transform="translate(10, 20)">
                <rect x="0" y="-4" width="12" height="2" fill="#ff3c00" />
                <text x="18" y="0" className="fill-white/30 text-[8px] tech-mono tracking-widest">SATELLITE_FIX</text>
@@ -88,7 +93,6 @@ export default function GpsLab() {
                <text x="18" y="15" className="fill-white/30 text-[8px] tech-mono tracking-widest">INTERNAL_IMU</text>
             </g>
 
-            {/* GPS Line */}
             <polyline
               fill="none"
               stroke="#ff3c00"
@@ -99,7 +103,6 @@ export default function GpsLab() {
               preserveAspectRatio="none"
               vectorEffect="non-scaling-stroke"
             />
-            {/* IMU Line */}
             <polyline
               fill="none"
               stroke="#FFFFFF"
@@ -117,8 +120,8 @@ export default function GpsLab() {
         <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
            <div className="tech-container border-white/5 p-4 h-32 overflow-y-auto custom-scrollbar bg-black/20">
               <div className="tech-mono mb-2 text-white/20">TRK_ANALYTICS</div>
-              {alerts.length === 0 && <div className="text-[8px] text-white/10 tech-mono italic uppercase">No signal anomalies.</div>}
-              {alerts.map((a, i) => (
+              {localAlerts.length === 0 && <div className="text-[8px] text-white/10 tech-mono italic uppercase">No signal anomalies.</div>}
+              {localAlerts.map((a, i) => (
                 <div key={i} className="text-[8px] font-mono text-zapper-orange mb-1 flex items-center gap-2">
                   <ShieldAlert size={10} />
                   {a}

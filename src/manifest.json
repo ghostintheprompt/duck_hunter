@@ -1,0 +1,58 @@
+{
+  "version": "1.5.0",
+  "codename": "GHOST-PROTOCOL",
+  "scenarios": [
+    {
+      "id": "SCEN-RF-001",
+      "name": "Broadband Saturation",
+      "category": "Electronic Warfare",
+      "technical_details": "White noise injection across 2.4GHz ISM band using high-gain directional array simulation."
+    },
+    {
+      "id": "SCEN-GPS-002",
+      "name": "GNSS Meaconing",
+      "category": "Signal Deception",
+      "technical_details": "Delayed rebroadcast of genuine GNSS signals to induce 100m+ positional drift."
+    },
+    {
+      "id": "SCEN-MAV-003",
+      "name": "MAVLink Injection",
+      "category": "Protocol Exploitation",
+      "technical_details": "Crafting unauthenticated MAV_CMD_DO_SET_MODE and MAV_CMD_COMPONENT_ARM_DISARM packets."
+    }
+  ],
+  "alerts": [
+    {
+      "id": "INC-RF-401",
+      "type": "SIGNAL_INTERFERENCE",
+      "severity": "CRITICAL",
+      "description": "Noise floor elevation > 20dB detected on control link."
+    },
+    {
+      "id": "INC-GPS-502",
+      "type": "GNSS_DIVERGENCE",
+      "severity": "HIGH",
+      "description": "Mismatch between GNSS coordinates and IMU-derived dead reckoning."
+    },
+    {
+      "id": "INC-MAV-603",
+      "type": "UNAUTHORIZED_COMMAND",
+      "severity": "CRITICAL",
+      "description": "Remote disarm command injected via secondary link."
+    }
+  ],
+  "guardrails": [
+    {
+      "id": "GR-001",
+      "name": "Faraday Containment",
+      "enforced": true,
+      "description": "Simulation active only within virtual shielded environment."
+    },
+    {
+      "id": "GR-002",
+      "name": "Legal Perimeter",
+      "enforced": true,
+      "description": "Automatic shutdown if live transmission detected outside laboratory bounds."
+    }
+  ]
+}

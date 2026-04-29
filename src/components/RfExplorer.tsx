@@ -107,13 +107,17 @@ export default function RfExplorer() {
                  const freq = activeBand.start + (i / 100) * (activeBand.end - activeBand.start);
                  const activeSignal = signals.find(s => Math.abs(s.freq - freq) < 1);
                  
+                 // Technical Restoration: Incorporate noise floor from SystemContext
+                 const noiseFactor = (state.noiseFloor + 110) / 2; // Normalize -110..-60 range
+                 const baseHeight = 5 + Math.random() * 5 + noiseFactor;
+
                  return (
                     <div key={i} className="flex-1 flex flex-col justify-end gap-1 h-full">
                        <motion.div 
                           initial={false}
                           animate={{ 
-                             height: activeSignal ? `${(activeSignal.power + 100)}%` : `${5 + Math.random() * 5}%`,
-                             backgroundColor: activeSignal ? (activeSignal.isDrone ? '#ff3c00' : '#ffffff44') : '#ffffff05'
+                             height: activeSignal ? `${(activeSignal.power + 100)}%` : `${baseHeight}%`,
+                             backgroundColor: activeSignal ? (activeSignal.isDrone ? '#ff3c00' : '#ffffff44') : (state.noiseFloor > -80 ? '#ef444420' : '#ffffff05')
                           }}
                           className="w-full transition-colors duration-500"
                        />
