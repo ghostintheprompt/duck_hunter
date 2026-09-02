@@ -6,7 +6,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-teal.svg)](https://opensource.org/licenses/MIT)
 [![Platform: Web](https://img.shields.io/badge/Platform-Web-blue.svg)](https://www.google.com/chrome/)
-[![Release: v1.5.0](https://img.shields.io/badge/Release-v1.5.0-orange.svg)](https://github.com/ghostintheprompt/duckhunter-drone-defense-laboratory/releases)
+[![Release: v1.5.0](https://img.shields.io/badge/Release-v1.5.0-orange.svg)](https://github.com/ghostintheprompt/duck_hunter/releases)
 
 DuckHunter is a high-fidelity, interactive drone security simulation and research platform. Operating under the **Universal Integrity Protocol (Ghost-Protocol Tier)**, it serves as a functional tactical OS for security researchers to analyze drone attack surfaces, intercept protocols, and identify RF signatures in a data-driven forensic environment.
 
@@ -44,8 +44,8 @@ DuckHunter is a high-fidelity, interactive drone security simulation and researc
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/ghostintheprompt/duckhunter-drone-defense-laboratory.git
-   cd duckhunter-drone-defense-laboratory
+   git clone https://github.com/ghostintheprompt/duck_hunter.git
+   cd duck_hunter
    ```
 
 2. Install dependencies:
