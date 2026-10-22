@@ -34,10 +34,10 @@ export default function EwCentral() {
   const { state, setNoiseFloor, setLinkIntegrity, triggerAlert } = useSystem();
   const [activeTool, setActiveTool] = useState<string | null>(null);
   const [deploymentProgress, setDeploymentProgress] = useState(0);
-  const [combatLogs, setCombatLogs] = useState<string[]>([]);
+  const [ewLogs, setEwLogs] = useState<string[]>([]);
 
   const addLog = (msg: string) => {
-    setCombatLogs(prev => [`[${new Date().toLocaleTimeString()}] ${msg}`, ...prev.slice(0, 10)]);
+    setEwLogs(prev => [`[${new Date().toLocaleTimeString()}] ${msg}`, ...prev.slice(0, 10)]);
   };
 
   const handleDeploy = (toolId: string) => {
@@ -90,12 +90,12 @@ export default function EwCentral() {
               <h2 className="text-xl font-bold text-white uppercase tracking-widest italic">Electronic Warfare Center</h2>
            </div>
            <p className="text-[10px] tech-mono text-white/40 leading-relaxed mb-4">
-              Combat-proven countermeasures inspired by modern high-intensity conflict zones. 
-              Broadband saturation and positional deception are mandatory for urban area denial.
+              Electronic-warfare effects modeled for research. Simulation only, never transmitted. 
+              Jamming and spoofing are federally restricted to specific government authorities.
            </p>
            {!state.droneDetected && (
               <div className="p-2 bg-red-500/20 border border-red-500/40 text-[8px] tech-mono text-red-500 uppercase flex items-center gap-2">
-                 <ShieldAlert size={12} /> Warning: No target lock. Countermeasures inactive.
+                 <ShieldAlert size={12} /> No target lock. Effects inactive (simulation).
               </div>
            )}
            <div className="mt-4 grid grid-cols-2 gap-4 border-t border-white/5 pt-4">
@@ -115,9 +115,9 @@ export default function EwCentral() {
         </div>
 
         <div className="tech-container p-6 w-64 bg-black/40">
-           <div className="pixel-label opacity-30 mb-2">Combat_Feed</div>
+           <div className="pixel-label opacity-30 mb-2">Sim_Feed</div>
            <div className="space-y-1 h-32 overflow-hidden flex flex-col justify-end">
-              {combatLogs.map((log, i) => (
+              {ewLogs.map((log, i) => (
                 <div key={i} className="text-[8px] tech-mono text-white/40 truncate">
                    {log}
                 </div>

@@ -27,7 +27,7 @@ export default function HardwareBridge() {
       // @ts-ignore
       const device = await navigator.usb.requestDevice({ filters: SDR_FILTERS });
       
-      console.log('Tactical link established:', device.productName);
+      console.log('Hardware link established:', device.productName);
       
       // Perform low-level handshake
       await device.open();
@@ -206,7 +206,7 @@ export default function HardwareBridge() {
       <div className="tech-container p-6 border-white/5 bg-black/40">
          <div className="flex items-center gap-3 mb-6">
             <TerminalIcon size={18} className="text-white/20" />
-            <h3 className="text-[10px] font-bold text-white uppercase tracking-widest">Tactical Implementation Plan</h3>
+            <h3 className="text-[10px] font-bold text-white uppercase tracking-widest">Implementation Notes</h3>
          </div>
          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[

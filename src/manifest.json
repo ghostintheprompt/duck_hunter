@@ -23,8 +23,8 @@
     {
       "id": "SCEN-MAV-004",
       "name": "Emergency Terminal",
-      "category": "Kinetic Impact",
-      "technical_details": "Injection of MAV_CMD_DO_FLIGHT_TERMINATION (ID: 400) to force immediate motor kill in mid-air."
+      "category": "Flight Termination (simulated)",
+      "technical_details": "Simulates MAV_CMD_DO_FLIGHT_TERMINATION (ID 400), the flight-termination command. Modeled for study, never transmitted to a real aircraft."
     },
     {
       "id": "SCEN-PWR-005",
@@ -34,9 +34,9 @@
     },
     {
       "id": "SCEN-NAV-006",
-      "name": "RTL_Explode Protocol",
+      "name": "Forced RTL",
       "category": "Logic Hijack",
-      "technical_details": "Forcing MAV_CMD_NAV_RETURN_TO_LAUNCH followed by an proximity-based payload trigger simulation."
+      "technical_details": "Forcing MAV_CMD_NAV_RETURN_TO_LAUNCH in simulation. MAVLink has no payload or kinetic trigger, and none is modeled."
     }
   ],
   "alerts": [

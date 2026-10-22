@@ -56,7 +56,7 @@ function AppContent() {
     { id: 'rf', label: 'SKY_SWEEP', icon: Radio, desc: 'SDR signal identification' },
     { id: 'mavlink', label: 'CMD_INJECT', icon: TerminalIcon, desc: 'Protocol interception' },
     { id: 'gps', label: 'TRACK_LOCK', icon: Satellite, desc: 'Signal integrity monitor' },
-    { id: 'ew', label: 'EW_CENTRAL', icon: Zap, desc: 'Combat countermeasures' },
+    { id: 'ew', label: 'EW_CENTRAL', icon: Zap, desc: 'Electronic-warfare effects (sim)' },
     { id: 'bridge', label: 'HWD_BRIDGE', icon: Cpu, desc: 'SDR hardware links' },
   ];
 
@@ -238,7 +238,7 @@ function AppContent() {
                            <div className="flex justify-between items-end mb-8">
                               <div>
                                  <h2 className="text-2xl font-bold text-white uppercase tracking-widest">CMD_INJECT_OS</h2>
-                                 <p className="text-[10px] text-white/40 tech-mono">Direct MAVLink packet injection and kill-switch deployment.</p>
+                                 <p className="text-[10px] text-white/40 tech-mono">MAVLink command-injection simulation for red-team study. Simulation only.</p>
                               </div>
                            </div>
                            <MavlinkLab />
@@ -260,7 +260,7 @@ function AppContent() {
                            <div className="flex justify-between items-end mb-8">
                               <div>
                                  <h2 className="text-2xl font-bold text-white uppercase tracking-widest italic">Electronic Warfare Center</h2>
-                                 <p className="text-[10px] text-white/40 tech-mono">High-intensity signal disruption and tactical area denial.</p>
+                                 <p className="text-[10px] text-white/40 tech-mono">Modeled signal-disruption effects for research. Simulation only.</p>
                               </div>
                            </div>
                            <EwCentral />

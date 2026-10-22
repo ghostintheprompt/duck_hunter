@@ -50,3 +50,7 @@ Thumbs.db
 
 # Safeguard
 !.env.example
+
+# python
+__pycache__/
+*.pyc

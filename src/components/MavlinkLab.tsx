@@ -34,12 +34,12 @@ export default function MavlinkLab() {
 
     addLog('COMMAND', `INJECTED: ${cmd}`);
     
-    if (cmd === 'TERMINATE_KINETIC') {
+    if (cmd === 'FLIGHT_TERMINATION') {
       setDroneState(prev => ({ ...prev, armed: false, alt: 0 }));
       setImpact(true);
-      setAlert('!!! CRITICAL: MID-AIR MOTOR KILL EXECUTED !!!');
-      addLog('IMPACT', 'PHYSICAL_DESTRUCTION_CONFIRMED // KINETIC_FAILSAFE_INJECTED');
-      triggerAlert('INC-MAV-400', 'KINETIC_TERMINATION', 'MAV_CMD_DO_FLIGHT_TERMINATION executed. Aircraft destroyed on impact.');
+      setAlert('SIM: FLIGHT-TERMINATION COMMAND ACCEPTED');
+      addLog('IMPACT', 'SIM_FLIGHT_TERMINATION_ACCEPTED // MAV_CMD_DO_FLIGHT_TERMINATION');
+      triggerAlert('INC-MAV-400', 'FLIGHT_TERMINATION', 'MAV_CMD_DO_FLIGHT_TERMINATION accepted in simulation. Not transmitted to any aircraft.');
       setTimeout(() => setAlert(null), 4000);
     }
 
@@ -58,16 +58,16 @@ export default function MavlinkLab() {
        }, 500);
     }
 
-    if (cmd === 'RTL_EXPLODE') {
+    if (cmd === 'FORCE_RTL') {
        setDroneState(prev => ({ ...prev, mode: 'RTL' }));
        addLog('HEARTBEAT', 'MODE CHANGE: RTL (FORCED)');
-       addLog('SYSTEM', 'PAYLOAD_ARMED: PROXIMITY_TRIGGER_ACTIVE');
+       addLog('SYSTEM', 'RTL_FORCED // no payload or secondary exists in MAVLink');
        
        setTimeout(() => {
-          addLog('IMPACT', 'RTL_PROXIMITY_TRIGGERED // SECONDARY_EFFECT_ACTIVE');
+          addLog('IMPACT', 'RTL_COMPLETED (simulated)');
           setImpact(true);
           setDroneState(prev => ({ ...prev, armed: false, alt: 0 }));
-          triggerAlert('INC-NAV-606', 'LOGIC_HIJACK', 'Aircraft returned to launch and detonated kinetic secondary.');
+          triggerAlert('INC-NAV-606', 'LOGIC_HIJACK', 'Aircraft forced to return-to-launch in simulation. No kinetic secondary exists in MAVLink.');
        }, 5000);
     }
 
@@ -126,7 +126,7 @@ export default function MavlinkLab() {
         <div className="flex items-center gap-4">
            {state.impactDetected && (
               <div className="flex items-center gap-2 px-2 py-0.5 bg-red-600 border border-red-400 text-[7px] tech-mono text-white animate-bounce">
-                 <ShieldAlert size={8} /> KINETIC_IMPACT_DETECTED
+                 <ShieldAlert size={8} /> SIM_TERMINATION
               </div>
            )}
            <div className="flex items-center gap-2">
@@ -154,7 +154,7 @@ export default function MavlinkLab() {
                 <ShieldAlert size={32} className="text-zapper-orange mx-auto mb-4 animate-pulse" />
                 <div className="font-bold text-white mb-2 uppercase tracking-widest">{state.impactDetected ? 'Signal_Terminated' : 'Target_Null'}</div>
                 <p className="text-[8px] text-white/40 tech-mono uppercase">
-                   {state.impactDetected ? 'Physical impact detected. Link parity lost. Reset system to acquire new target.' : 'Please lock onto a signal in the SKY_SWEEP lab before attempting injection.'}
+                   {state.impactDetected ? 'Flight-termination simulated. Link parity lost. Reset to acquire a new target.' : 'Please lock onto a signal in the SKY_SWEEP lab before attempting injection.'}
                 </p>
               </div>
             </div>
@@ -205,13 +205,13 @@ export default function MavlinkLab() {
           </div>
           
           <div className="flex-1 pt-4 border-t border-white/5">
-             <div className="pixel-label mb-4 text-zapper-orange uppercase">Offensive Tools</div>
+             <div className="pixel-label mb-4 text-zapper-orange uppercase">Red-team simulation (not transmitted)</div>
              <div className="flex flex-col gap-2">
                 <button 
-                  onClick={() => injectCommand('TERMINATE_KINETIC')}
+                  onClick={() => injectCommand('FLIGHT_TERMINATION')}
                   className="group relative w-full py-2 bg-red-600/10 border border-red-600/30 text-red-500 text-[8px] tech-mono hover:bg-red-600 hover:text-white transition-all uppercase flex items-center justify-center gap-2"
                 >
-                  <Zap size={10} className="group-hover:animate-pulse" /> Kinetic Kill
+                  <Zap size={10} className="group-hover:animate-pulse" /> Flight Termination
                 </button>
                 <button 
                   onClick={() => injectCommand('THERMAL_OVERLOAD')}
@@ -220,10 +220,10 @@ export default function MavlinkLab() {
                   <Flame size={10} /> Heat Soak
                 </button>
                 <button 
-                  onClick={() => injectCommand('RTL_EXPLODE')}
+                  onClick={() => injectCommand('FORCE_RTL')}
                   className="group w-full py-2 bg-purple-600/10 border border-purple-600/30 text-purple-500 text-[8px] tech-mono hover:bg-purple-600 hover:text-white transition-all uppercase flex items-center justify-center gap-2"
                 >
-                  <Bomb size={10} /> RTL_Detonate
+                  <Bomb size={10} /> Force RTL
                 </button>
                 <div className="h-4" />
                 <button 

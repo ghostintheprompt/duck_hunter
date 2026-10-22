@@ -1,6 +1,6 @@
 {
-  "name": "DuckHunter: Drone Defense Laboratory",
-  "description": "A high-fidelity drone security and countermeasure laboratory inspired by classic interception systems.",
+  "name": "DuckHunter: Drone Detection Lab",
+  "description": "A drone detection and force-protection research lab. Multi-modal sensing for the low-flying drone that does not emit, plus a simulation-only red-team module for the attack side.",
   "requestFramePermissions": [],
   "majorCapabilities": []
 }
