@@ -66,4 +66,6 @@ Local only. No telemetry, no analytics, no tracking.
 
 Built because the small, quiet thing that takes aircraft out of the sky should be seen coming. For a pilot who flew toward the wounded, and the six who flew with her. Seven stars.
 
+Background: [ghostintheprompt.com/articles/the-closest-thing-to-a-time-machine](https://ghostintheprompt.com/articles/the-closest-thing-to-a-time-machine)
+
 Built by [MDRN Corp](https://mdrn.app)
