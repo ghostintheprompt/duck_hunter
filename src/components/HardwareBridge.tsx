@@ -72,7 +72,7 @@ export default function HardwareBridge() {
            
            <div className="space-y-4 text-[10px] tech-mono leading-relaxed text-white/40">
               <p>
-                 To use DuckHunter with real-world signals, connect your device and authorize the browser to link the driver bridge.
+                 WebUSB can claim a supported SDR here, but in-browser I/Q sampling is not implemented: live capture needs the local librtlsdr daemon described under Legal &amp; Technical Hurdles. The stream shown after connecting is a simulated preview, not live hardware output.
               </p>
               <div className="p-4 bg-black/40 border-l border-zapper-orange/40">
                  <div className="text-white mb-2 underline uppercase">Detected Hardware:</div>
@@ -141,17 +141,17 @@ export default function HardwareBridge() {
            <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
                  <TerminalIcon size={16} className="text-zapper-orange" />
-                 <h3 className="text-[10px] font-bold text-white uppercase tracking-widest italic">{state.hardwareType}_DATA_STREAM</h3>
+                 <h3 className="text-[10px] font-bold text-white uppercase tracking-widest italic">{state.hardwareType}_DATA_STREAM <span className="text-white/30 not-italic">(SIMULATED PREVIEW)</span></h3>
               </div>
               <div className="flex items-center gap-4 text-[8px] tech-mono">
-                 <span className="text-duck-green font-bold animate-pulse">SAMPLES_STREAMING</span>
-                 <span className="text-white/20">2.4 Msps</span>
+                 <span className="text-white/40 font-bold">USB CLAIMED &middot; NO LIVE I/Q READ</span>
+                 <span className="text-white/20">2.4 Msps (spec)</span>
               </div>
            </div>
 
            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-2">
-                 <div className="text-[7px] tech-mono text-white/20 uppercase mb-2">Decoded_Frames</div>
+                 <div className="text-[7px] tech-mono text-white/20 uppercase mb-2">Decoded_Frames (simulated preview — not live hardware output)</div>
                  <div className="h-40 bg-black/60 p-4 font-mono text-[8px] space-y-1 overflow-hidden relative">
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent pointer-events-none" />
                     {[...Array(8)].map((_, i) => (
